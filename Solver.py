@@ -59,14 +59,6 @@ def dfs(cube, max_depth=7):
     return None
 
 def heuristic(cube):
-    # Count the number of misplaced stickers (very naive)
-    misplaced = 0
-    for face in cube.faces.values():
-        color = face[0][0]
-        misplaced += sum(cell != color for row in face for cell in row)
-    return misplaced
-# --- Simple heuristic: count misplaced stickers ---
-def heuristic(cube):
     misplaced = 0
     for face in cube.faces.values():
         color = face[0][0]
