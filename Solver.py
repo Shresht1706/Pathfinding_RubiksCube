@@ -2,6 +2,9 @@ from collections import deque
 from temp import RubiksCube
 import heapq
 import itertools
+import time
+import csv
+import copy
 
 def get_neighbors(cube):
     neighbors = []
@@ -88,3 +91,27 @@ def astar(cube):
                 path + [move]
             ))
     return None
+
+
+def results(size,alg_func):
+    shuffle_numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    csv_file = 'results.csv'
+    with open(csv_file, mode='w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(['algorithm', 'cube_size', 'shuffle_count', 'solution_length', 'time_taken'])
+        for shuffles in shuffle_numbers:
+            cube = RubiksCube(size)
+            cube.shuffle(moves=shuffles)
+            print(f"\nCube Size: {size}, Shuffles: {shuffles}")
+            print(cube)
+            start = time.time()
+            solution = alg_func(copy.deepcopy(cube))
+            end = time.time()
+            time_taken = round(end - start, 4)
+            length = len(solution) if solution else 0
+            
+            alg_name = alg_func.__name__
+            print(f"{alg_name}: {length} moves, Time: {time_taken}s")
+            writer.writerow([alg_name, size, shuffles, length, time_taken]) #written as 'algorithm', 'cube_size', 'shuffle_count', 'solution_length', 'time_taken'
+            time.sleep(1)
+
