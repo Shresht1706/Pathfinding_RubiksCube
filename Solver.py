@@ -92,26 +92,28 @@ def astar(cube):
             ))
     return None
 
-
-def results(size,alg_func):
-    shuffle_numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+def append_results(alg_name,size,shuffles,length,time_taken):
     csv_file = 'results.csv'
-    with open(csv_file, mode='w', newline='') as file:
-        writer = csv.writer(file)
-        writer.writerow(['algorithm', 'cube_size', 'shuffle_count', 'solution_length', 'time_taken'])
-        for shuffles in shuffle_numbers:
-            cube = RubiksCube(size)
-            cube.shuffle(moves=shuffles)
-            print(f"\nCube Size: {size}, Shuffles: {shuffles}")
-            print(cube)
-            start = time.time()
-            solution = alg_func(copy.deepcopy(cube))
-            end = time.time()
-            time_taken = round(end - start, 4)
-            length = len(solution) if solution else 0
-            
-            alg_name = alg_func.__name__
-            print(f"{alg_name}: {length} moves, Time: {time_taken}s")
-            writer.writerow([alg_name, size, shuffles, length, time_taken]) #written as 'algorithm', 'cube_size', 'shuffle_count', 'solution_length', 'time_taken'
-            time.sleep(1)
+    file = open(csv_file, mode='a', newline='')
+    writer = csv.writer(file)
+    writer.writerow([alg_name, size, shuffles, length, time_taken]) #written as 'algorithm', 'cube_size', 'shuffle_count', 'solution_length', 'time_taken'
+
+def results(size,alg_func,shuffle_numbers):        
+    for i in range(1,shuffle_numbers+1):
+        cube = RubiksCube(size)
+        cube.shuffle(moves=i)
+        print(f"\nCube Size: {size}, Shuffles: {i}")
+        print(cube)
+        start = time.time()
+        solution = alg_func(copy.deepcopy(cube))
+        end = time.time()
+        time_taken = round(end - start, 4)
+        length = len(solution) if solution else 0
+        
+        alg_name = alg_func.__name__
+        print(f"{alg_name}: {length} moves, Time: {time_taken}s")
+        time.sleep(1)
+        append_results(alg_name,size,i,length,time_taken)
+        time.sleep(1)
+
 
