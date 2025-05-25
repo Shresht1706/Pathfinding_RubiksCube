@@ -1,12 +1,12 @@
 from collections import deque
-from temp import RubiksCube
+from Cube import RubiksCube
 import heapq
 import itertools
 import time
 import csv
 import copy
 
-def get_neighbors(cube):
+def get_neighbors(cube):    #gets immedieate neighbouring states of the cube for the different algos
     neighbors = []
     size = cube.size
     for face in ['U', 'D', 'F', 'B', 'L', 'R']:
@@ -23,13 +23,13 @@ def get_neighbors(cube):
                     neighbors.append((new_cube, f"{axis}{layer}{'+' if clockwise else '-'}"))
     return neighbors
 
-def copy_cube(cube):
+def copy_cube(cube):    #self explanatory
     import copy
     new_cube = RubiksCube(cube.size)
     new_cube.faces = copy.deepcopy(cube.faces)
     return new_cube
 
-def bfs(cube):
+def bfs(cube):      #uses FIFO finds shortest path uses get_neighbours to generate all next states
     visited = set()
     queue = deque([(cube, [])])
     while queue:
@@ -44,7 +44,7 @@ def bfs(cube):
             queue.append((neighbor, path + [move]))
     return None
 
-def dfs(cube, max_depth=7):
+def dfs(cube, max_depth=7):     #uses LIFO and explores depth and same as BFS for neighbours
     visited = set()
     stack = [(cube, [])]
     while stack:
@@ -61,15 +61,14 @@ def dfs(cube, max_depth=7):
             stack.append((neighbor, path + [move]))
     return None
 
-def heuristic(cube):
+def heuristic(cube):    #measures misplaces coloured cubes for more guidance
     misplaced = 0
     for face in cube.faces.values():
         color = face[0][0]
         misplaced += sum(cell != color for row in face for cell in row)
     return misplaced
 
-# --- A* Search with tie-breaker to avoid comparing RubiksCube objects ---
-def astar(cube):
+def astar(cube):    #cost of f = g + h and uses heap to avoid revisitation.
     visited = set()
     counter = itertools.count()
     heap = [(heuristic(cube), 0, next(counter), cube, [])]

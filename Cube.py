@@ -13,7 +13,7 @@ class RubiksCube:
         }
 
     def is_solved(self):
-        """Check if each face has a uniform color."""
+        #all same coloured cubes in one face
         for face in self.faces.values():
             color = face[0][0]
             if any(cell != color for row in face for cell in row):
@@ -21,11 +21,11 @@ class RubiksCube:
         return True
 
     def rotate_layer(self, face, clockwise=True):
-        """Rotate an outer face and its adjacent edge strips."""
+        #outer faces adjacent sides
         s = self.size
         f = self.faces
 
-        # Rotate the face itself
+        # Rotate the face
         new_face = [[None] * s for _ in range(s)]
         for i in range(s):
             for j in range(s):
@@ -57,26 +57,19 @@ class RubiksCube:
         else:
             raise ValueError(f"Invalid face '{face}'.")
 
-        # Extract edge values
         values = [[f[side][i][j] for (i, j) in idxs] for side in sides]
 
-        # Rotate edge values
         if clockwise:
             values = values[-1:] + values[:-1]
         else:
             values = values[1:] + values[:1]
 
-        # Assign rotated values
         for side, val in zip(sides, values):
             for (i, j), v in zip(idxs, val):
                 f[side][i][j] = v
 
     def rotate_inner_slice(self, axis, layer_index, clockwise=True):
-        """
-        Rotate an inner slice (not an outer face).
-        Axis: 'x', 'y', or 'z'
-        Layer index: must be 1 <= index <= size - 2
-        """
+        #can be x,y,z according to the slice
         s = self.size
         if layer_index == 0 or layer_index == s - 1:
             raise ValueError("Use rotate_layer() for outer layers (index 0 or size-1).")
@@ -145,7 +138,7 @@ class RubiksCube:
 
 
     def shuffle(self, moves=20):
-        """Randomly apply face and slice rotations."""
+        #random shuffling
         faces = ['U', 'D', 'F', 'B', 'L', 'R']
         axes = ['x', 'y', 'z']
         for _ in range(moves):
@@ -165,5 +158,5 @@ class RubiksCube:
         return result
 
     def cube_to_tuple(self):
-        """Serialize cube state to a hashable form for visited tracking."""
+        #easy to process
         return tuple(tuple(tuple(row) for row in self.faces[face]) for face in ['U', 'D', 'F', 'B', 'L', 'R'])
